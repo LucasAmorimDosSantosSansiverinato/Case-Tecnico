@@ -1,0 +1,28 @@
+name: Database Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'migrations/**'
+
+jobs:
+  migrate:
+    name: Run Flyway migrations on Supabase
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run migrations
+        working-directory: migrations
+        run: mvn --batch-mode flyway:migrate
+        env:
+          FLYWAY_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+          FLYWAY_USER: ${{ secrets.SUPABASE_DB_USERNAME }}
+          FLYWAY_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}

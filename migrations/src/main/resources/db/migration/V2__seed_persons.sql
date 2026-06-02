@@ -1,0 +1,11 @@
+INSERT INTO persons (id, full_name, document, email, birth_date, cep, street, neighborhood, city, state, number, complement, login, created_at) VALUES
+  (gen_random_uuid(), 'Maria Silva Souza',      '52998224725', 'maria.silva@email.com',     '1990-03-15', '01001000', 'Praca da Se',        'Se',         'Sao Paulo',       'SP', '10',  NULL,       'mariasi', NOW()),
+  (gen_random_uuid(), 'Joao Pedro Lima',         '11144477735', 'joao.lima@email.com',       '1985-07-22', '20040020', 'Avenida Rio Branco', 'Centro',     'Rio de Janeiro',  'RJ', '156', 'Sala 3',   'joaoped', NOW()),
+  (gen_random_uuid(), 'Ana Paula Ferreira',      '04897317027', 'ana.ferreira@email.com',    '1993-11-08', '30130010', 'Avenida Afonso Pena','Centro',     'Belo Horizonte',  'MG', '45',  NULL,       'anapfer', NOW()),
+  (gen_random_uuid(), 'Carlos Eduardo Santos',   '60822906000', 'carlos.santos@email.com',   '1988-05-30', '40010010', 'Avenida Sete de Setembro', 'Centro', 'Salvador',     'BA', '300', 'Apto 12',  'carloed', NOW()),
+  (gen_random_uuid(), 'Patricia Oliveira Costa', '98289767002', 'patricia.costa@email.com',  '1995-02-14', '80010010', 'Rua XV de Novembro','Centro',     'Curitiba',        'PR', '220', NULL,       'patroli', NOW()),
+  (gen_random_uuid(), 'Roberto Alves Mendes',    '12748579080', 'roberto.mendes@email.com',  '1982-09-01', '01310100', 'Avenida Paulista',  'Bela Vista', 'Sao Paulo',       'SP', '900', 'Conj 51',  'robalvm', NOW()),
+  (gen_random_uuid(), 'Fernanda Rocha Dias',     '71428792050', 'fernanda.dias@email.com',   '1997-06-20', '90010260', 'Rua dos Andradas',  'Centro',     'Porto Alegre',    'RS', '55',  NULL,       'fernrdi', NOW()),
+  (gen_random_uuid(), 'Lucas Martins Barbosa',   '87748248008', 'lucas.barbosa@email.com',   '1999-12-03', '64000060', 'Rua Acre',          'Centro',     'Teresina',        'PI', '18',  NULL,       'lucamar', NOW()),
+  (gen_random_uuid(), 'Juliana Nunes Carvalho',  '59360454002', 'juliana.carvalho@email.com','1991-08-17', '69010060', 'Avenida Eduardo Ribeiro', 'Centro', 'Manaus',        'AM', '520', 'Sala 2',   'julinun', NOW()),
+  (gen_random_uuid(), 'Diego Souza Ribeiro',     '34428954073', 'diego.ribeiro@email.com',   '1986-04-25', '49010010', 'Rua Laranjeiras',   'Centro',     'Aracaju',         'SE', '77',  NULL,       'diegsri', NOW());

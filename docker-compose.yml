@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: desafio-postgres
+    environment:
+      POSTGRES_DB: desafiotecnico
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrations:
+    build:
+      context: ./migrations
+    container_name: desafio-migrations
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/desafiotecnico
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: desafio-backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/desafiotecnico
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      BFF_ORIGIN: http://localhost:3001
+    ports:
+      - "8080:8080"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
+  bff:
+    build:
+      context: ./bff
+      dockerfile: Dockerfile
+    container_name: desafio-bff
+    environment:
+      BACKEND_URL: http://backend:8080
+      FRONTEND_ORIGIN: http://localhost:5173
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

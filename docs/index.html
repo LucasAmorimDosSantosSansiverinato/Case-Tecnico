@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentação — Case Técnico Cadastro de Pessoas</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Layout ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    nav {
+      width: 260px;
+      min-width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav .logo {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    nav .logo h2 { font-size: 1rem; color: var(--primary); font-weight: 700; }
+    nav .logo p  { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+    nav a {
+      display: block;
+      padding: 8px 20px;
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--primary);
+      border-left-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    nav .nav-section {
+      padding: 12px 20px 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    main {
+      flex: 1;
+      padding: 48px;
+      max-width: 900px;
+    }
+
+    /* ── Typography ── */
+    h1 { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+    h2 { font-size: 1.4rem; font-weight: 700; color: var(--text); margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 24px 0 10px; }
+    p  { margin-bottom: 12px; color: var(--text); }
+
+    .subtitle { color: var(--muted); font-size: 1.05rem; margin-bottom: 32px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-blue    { background: #dbeafe; color: #1d4ed8; }
+    .badge-green   { background: #dcfce7; color: #15803d; }
+    .badge-yellow  { background: #fef9c3; color: #854d0e; }
+    .badge-red     { background: #fee2e2; color: #b91c1c; }
+    .badge-purple  { background: #f3e8ff; color: #7e22ce; }
+    .badge-gray    { background: #f1f5f9; color: #475569; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 12px 0 20px;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    .inline-code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.85em;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 24px;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    /* ── Architecture diagram ── */
+    .arch-diagram {
+      background: var(--code-bg);
+      color: #94a3b8;
+      border-radius: var(--radius);
+      padding: 24px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .arch-diagram .highlight { color: #60a5fa; font-weight: bold; }
+    .arch-diagram .arrow     { color: #34d399; }
+    .arch-diagram .note      { color: #fbbf24; }
+
+    /* ── Layer boxes ── */
+    .layers {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 16px 0 24px;
+    }
+
+    .layer {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border-left: 4px solid;
+    }
+
+    .layer-domain      { background: #fef3c7; border-color: #f59e0b; }
+    .layer-application { background: #dbeafe; border-color: #3b82f6; }
+    .layer-infra-data  { background: #dcfce7; border-color: #22c55e; }
+    .layer-infra-utils { background: #f3e8ff; border-color: #a855f7; }
+    .layer-webui       { background: #fee2e2; border-color: #ef4444; }
+
+    .layer-name { font-weight: 700; font-size: 0.9rem; min-width: 200px; }
+    .layer-desc { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── Method badges ── */
+    .method {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+      min-width: 52px;
+      text-align: center;
+    }
+    .method-post   { background: #dcfce7; color: #15803d; }
+    .method-get    { background: #dbeafe; color: #1d4ed8; }
+    .method-delete { background: #fee2e2; color: #b91c1c; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; }
+    .checklist li {
+      padding: 6px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+    .check-ok   { color: var(--success); font-weight: bold; }
+    .check-warn { color: var(--warning); font-weight: bold; }
+    .check-no   { color: var(--danger);  font-weight: bold; }
+
+    /* ── Flow steps ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .flow-number {
+      background: var(--primary);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .flow-content strong { display: block; font-size: 0.9rem; }
+    .flow-content span   { font-size: 0.82rem; color: var(--muted); }
+
+    /* ── Alert box ── */
+    .alert-box {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+    .alert-info    { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      nav { width: 100%; height: auto; position: static; }
+      main { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <nav>
+    <div class="logo">
+      <h2>Case Técnico</h2>
+      <p>Cadastro de Pessoas</p>
+    </div>
+
+    <div class="nav-section">Visão Geral</div>
+    <a href="#overview">Resumo</a>
+    <a href="#stack">Tecnologias</a>
+    <a href="#checklist">Checklist do Case</a>
+
+    <div class="nav-section">Arquitetura</div>
+    <a href="#architecture">Diagrama</a>
+    <a href="#layers">Camadas (Clean Arch)</a>
+    <a href="#cqrs">CQRS</a>
+    <a href="#bff">BFF</a>
+
+    <div class="nav-section">Backend</div>
+    <a href="#api">Endpoints da API</a>
+    <a href="#validations">Validações</a>
+    <a href="#login-logic">Lógica do Login</a>
+    <a href="#persistence">Persistência</a>
+
+    <div class="nav-section">Frontend</div>
+    <a href="#frontend">Estrutura React</a>
+
+    <div class="nav-section">Infraestrutura</div>
+    <a href="#docker">Docker</a>
+    <a href="#migrations">Migrations</a>
+    <a href="#cicd">CI/CD</a>
+
+    <div class="nav-section">Execução</div>
+    <a href="#howto">Como rodar</a>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h1>Case Técnico</h1>
+      <p class="subtitle">Aplicação full-stack de cadastro de pessoas com geração automática de login</p>
+
+      <div class="card-grid">
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Projetos Java</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Módulos Maven</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Chars do login</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Build Success</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section id="stack">
+      <h2>Tecnologias</h2>
+      <table>
+        <thead>
+          <tr><th>Camada</th><th>Tecnologia</th><th>Versão</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Frontend</td><td>React + Vite + React Hook Form</td><td>18 / 5</td></tr>
+          <tr><td>BFF</td><td>Java + Spring Boot</td><td>21 / 3.2.5</td></tr>
+          <tr><td>Backend</td><td>Java + Spring Boot (Clean Arch + CQRS)</td><td>21 / 3.2.5</td></tr>
+          <tr><td>Banco de dados</td><td>PostgreSQL via Docker</td><td>16</td></tr>
+          <tr><td>Migrations</td><td>Flyway (projeto separado)</td><td>10.12</td></tr>
+          <tr><td>ORM</td><td>Spring Data JPA + Hibernate</td><td>3.2.5</td></tr>
+          <tr><td>CEP</td><td>ViaCEP API</td><td>—</td></tr>
+          <tr><td>CI/CD</td><td>GitHub Actions</td><td>—</td></tr>
+          <tr><td>Containers</td><td>Docker + Docker Compose</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section id="checklist">
+      <h2>Checklist do Case</h2>
+
+      <h3>Funcionalidades Obrigatórias</h3>
+      <ul class="checklist">
+        <li><span class="check-ok">✔</span> Cadastro com nome, CPF, e-mail, data de nascimento, CEP e endereço</li>
+        <li><span class="check-ok">✔</span> Preenchimento automático do endereço via ViaCEP</li>
+        <li><span class="check-ok">✔</span> Todos os campos obrigatórios com validação</li>
+        <li><span class="check-ok">✔</span> Login gerado automaticamente com exatamente 7 caracteres</li>
+        <li><span class="check-ok">✔</span> Login único, sem números, sem espaços, só letras a-z</li>
+        <li><span class="check-ok">✔</span> Login construído a partir do nome da pessoa</li>
+        <li><span class="check-ok">✔</span> Estratégia de unicidade quando login já existe</li>
+        <li><span class="check-ok">✔</span> Dados persistidos no banco PostgreSQL</li>
+        <li><span class="check-ok">✔</span> Retorno do login gerado ao final do cadastro</li>
+        <li><span class="check-ok">✔</span> Tratamento de erros client + server</li>
+        <li><span class="check-ok">✔</span> Validações no frontend e no backend</li>
+        <li><span class="check-ok">✔</span> Máscaras de input (CPF, CEP)</li>
+        <li><span class="check-ok">✔</span> Exibição de mensagens de erro ao usuário</li>
+      </ul>
+
+      <h3>Diferenciais Implementados</h3>
+      <ul class="checklist">
+        <li><span class="check-ok">✔</span> Testes automatizados (domain + infra-utils)</li>
+        <li><span class="check-ok">✔</span> Containerização com Docker + docker-compose</li>
+        <li><span class="check-ok">✔</span> Documentação de arquitetura (este arquivo)</li>
+        <li><span class="check-ok">✔</span> Boas práticas de API (ProblemDetail RFC 9457)</li>
+        <li><span class="check-ok">✔</span> Uso de migrations/ORM (Flyway + JPA)</li>
+        <li><span class="check-ok">✔</span> Responsividade da interface</li>
+        <li><span class="check-ok">✔</span> Deploy via CI/CD (GitHub Actions)</li>
+        <li><span class="check-ok">✔</span> Clean Architecture com separação física de módulos Maven</li>
+        <li><span class="check-ok">✔</span> CQRS para separação de leitura/escrita</li>
+        <li><span class="check-ok">✔</span> BFF como camada intermediária</li>
+      </ul>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture">
+      <h2>Diagrama de Arquitetura</h2>
+
+      <div class="arch-diagram">
+<span class="highlight">┌─────────────────────────────────────────┐</span>
+<span class="highlight">│         Browser (Cloudflare Pages)      │</span>
+<span class="highlight">│         React + Vite  :5173             │</span>
+<span class="highlight">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">│ HTTP</span>
+<span class="highlight">┌──────────────────▼──────────────────────┐</span>
+<span class="highlight">│     BFF — Java Spring Boot  :3001       │</span>
+<span class="note">│  proxy  │  ViaCEP lookup  │  CORS       │</span>
+<span class="highlight">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">│ HTTP interno</span>
+<span class="highlight">┌──────────────────▼──────────────────────┐</span>
+<span class="highlight">│   Backend — Java Spring Boot  :8080     │</span>
+<span class="note">│  Clean Architecture + CQRS              │</span>
+<span class="highlight">│  domain │ application │ infra │ webui   │</span>
+<span class="highlight">└──────────────────┬──────────────────────┘</span>
+                   <span class="arrow">│ JDBC</span>
+<span class="highlight">┌──────────────────▼──────────────────────┐</span>
+<span class="highlight">│         PostgreSQL 16  :5432            │</span>
+<span class="note">│         (Docker container)              │</span>
+<span class="highlight">└─────────────────────────────────────────┘</span>
+      </div>
+    </section>
+
+    <!-- LAYERS -->
+    <section id="layers">
+      <h2>Camadas — Clean Architecture</h2>
+      <p>Cada camada é um módulo Maven independente. As dependências de compilação seguem estritamente a hierarquia abaixo:</p>
+
+      <div class="layers">
+        <div class="layer layer-domain">
+          <span class="layer-name">desafioTecnico-domain</span>
+          <span class="layer-desc">Entidades, Value Objects, exceções. Não conhece nenhuma outra camada.</span>
+        </div>
+        <div class="layer layer-application">
+          <span class="layer-name">desafioTecnico-application</span>
+          <span class="layer-desc">Commands, Queries, Handlers, Ports (interfaces). Conhece apenas domain.</span>
+        </div>
+        <div class="layer layer-infra-data">
+          <span class="layer-name">desafioTecnico-infra-data</span>
+          <span class="layer-desc">JPA entities, Spring Data repositories, adapter que implementa PersonRepository do domain. Não conhece application.</span>
+        </div>
+        <div class="layer layer-infra-utils">
+          <span class="layer-name">desafioTecnico-infra-utils</span>
+          <span class="layer-desc">ViaCepAddressService, LoginGeneratorService. Conhece domain e application (para implementar as ports). Não conhece webui.</span>
+        </div>
+        <div class="layer layer-webui">
+          <span class="layer-name">desafioTecnico-webui</span>
+          <span class="layer-desc">REST Controllers, DTOs, Exception Handler, Application.java. Conhece apenas application em compile-time. Recebe infra-data e infra-utils via DI em runtime.</span>
+        </div>
+      </div>
+
+      <div class="alert-box alert-info">
+        A separação física garante que um módulo não pode importar classes de outra camada que não está no seu <span class="inline-code">pom.xml</span>. Qualquer violação é erro de compilação.
+      </div>
+    </section>
+
+    <!-- CQRS -->
+    <section id="cqrs">
+      <h2>CQRS</h2>
+      <p>Commands e Queries são separados em pacotes distintos dentro da camada <span class="inline-code">application</span>. Os handlers são classes simples (sem interface genérica) injetadas via Spring no <span class="inline-code">webui</span>.</p>
+
+      <table>
+        <thead><tr><th>Tipo</th><th>Classe</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-blue">Command</span></td><td><span class="inline-code">RegisterPersonCommand</span></td><td>Cadastrar nova pessoa</td></tr>
+          <tr><td><span class="badge badge-green">Query</span></td><td><span class="inline-code">GetPersonByIdQuery</span></td><td>Buscar pessoa por ID</td></tr>
+          <tr><td><span class="badge badge-green">Query</span></td><td><span class="inline-code">GetAllPersonsQuery</span></td><td>Listar todas as pessoas</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- BFF -->
+    <section id="bff">
+      <h2>BFF — Backend for Frontend</h2>
+      <p>Camada intermediária entre o React e o backend Java. Responsabilidades:</p>
+      <ul style="margin: 8px 0 16px 20px; font-size:0.9rem;">
+        <li>Proxy de requisições para o backend (evita CORS direto do browser)</li>
+        <li>Lookup de CEP via ViaCEP e retorno normalizado ao frontend</li>
+        <li>Validação de entrada antes de repassar ao backend</li>
+        <li>Ponto único de controle de CORS</li>
+      </ul>
+    </section>
+
+    <!-- API ENDPOINTS -->
+    <section id="api">
+      <h2>Endpoints da API</h2>
+
+      <h3>Backend — porta 8080</h3>
+      <table>
+        <thead><tr><th>Método</th><th>Path</th><th>Descrição</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-post">POST</span></td>
+            <td><span class="inline-code">/api/v1/persons</span></td>
+            <td>Cadastrar pessoa e gerar login</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/api/v1/persons</span></td>
+            <td>Listar todas as pessoas</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/api/v1/persons/{id}</span></td>
+            <td>Buscar pessoa por ID</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/actuator/health</span></td>
+            <td>Health check</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>BFF — porta 3001</h3>
+      <table>
+        <thead><tr><th>Método</th><th>Path</th><th>Descrição</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-post">POST</span></td>
+            <td><span class="inline-code">/api/persons</span></td>
+            <td>Proxy → backend POST /api/v1/persons</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/api/persons</span></td>
+            <td>Proxy → backend GET /api/v1/persons</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/api/address/{cep}</span></td>
+            <td>Lookup ViaCEP normalizado</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td><span class="inline-code">/health</span></td>
+            <td>Health check do BFF</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Exemplo — Cadastro de Pessoa</h3>
+      <p><strong>Request</strong> <span class="inline-code">POST /api/v1/persons</span></p>
+      <pre><code>{
+  "fullName":  "Maria Silva Souza",
+  "document":  "52998224725",
+  "email":     "maria.silva@email.com",
+  "birthDate": "1990-03-15",
+  "cep":       "01001000",
+  "number":    "100",
+  "complement": "Apto 12"
+}</code></pre>
+
+      <p><strong>Response 201 Created</strong></p>
+      <pre><code>{
+  "id":        "a3f2c1b0-...",
+  "fullName":  "Maria Silva Souza",
+  "document":  "529.982.247-25",
+  "email":     "maria.silva@email.com",
+  "birthDate": "1990-03-15",
+  "address": {
+    "cep":          "01001000",
+    "street":       "Praça da Sé",
+    "neighborhood": "Sé",
+    "city":         "São Paulo",
+    "state":        "SP",
+    "number":       "100",
+    "complement":   "Apto 12"
+  },
+  "login":     "mariasi",
+  "createdAt": "2026-06-02T18:00:00"
+}</code></pre>
+
+      <p><strong>Response 422 — Regra de negócio violada</strong></p>
+      <pre><code>{
+  "title":  "Business Rule Violation",
+  "status": 422,
+  "detail": "A person with this document is already registered"
+}</code></pre>
+    </section>
+
+    <!-- VALIDATIONS -->
+    <section id="validations">
+      <h2>Validações</h2>
+      <table>
+        <thead><tr><th>Campo</th><th>Regras</th><th>Onde valida</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Nome completo</strong></td>
+            <td>Obrigatório · mínimo 2 palavras · apenas letras e espaços (sem acentos) · trim de espaços</td>
+            <td>Frontend + Domain</td>
+          </tr>
+          <tr>
+            <td><strong>CPF</strong></td>
+            <td>Obrigatório · 11 dígitos · dígitos verificadores válidos · único no banco</td>
+            <td>Frontend + Domain + Application</td>
+          </tr>
+          <tr>
+            <td><strong>E-mail</strong></td>
+            <td>Obrigatório · formato válido · único no banco</td>
+            <td>Frontend + Domain + Application</td>
+          </tr>
+          <tr>
+            <td><strong>Data de nascimento</strong></td>
+            <td>Obrigatória · data real · não pode ser futura</td>
+            <td>Frontend + Domain</td>
+          </tr>
+          <tr>
+            <td><strong>CEP</strong></td>
+            <td>Obrigatório · 8 dígitos · deve existir na API ViaCEP</td>
+            <td>Frontend + infra-utils</td>
+          </tr>
+          <tr>
+            <td><strong>Endereço</strong></td>
+            <td>Preenchido automaticamente via CEP · número e complemento opcionais</td>
+            <td>Frontend</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- LOGIN LOGIC -->
+    <section id="login-logic">
+      <h2>Lógica de Geração do Login</h2>
+
+      <div class="alert-box alert-success">
+        Login: exatamente 7 caracteres · apenas letras minúsculas a–z · sem números · sem espaços · único · derivado do nome da pessoa
+      </div>
+
+      <h3>Algoritmo (LoginGeneratorService)</h3>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <div class="flow-content">
+            <strong>Normalizar o nome</strong>
+            <span>Remove acentos via <span class="inline-code">Normalizer.NFD</span>, converte para minúsculas, elimina caracteres não-alfa. Ex: "João Pedro Lima" → "joao pedro lima"</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <div class="flow-content">
+            <strong>Dividir em partes</strong>
+            <span>Split por espaço → <span class="inline-code">["joao", "pedro", "lima"]</span></span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <div class="flow-content">
+            <strong>Gerar candidatos em ordem de prioridade</strong>
+            <span>
+              Estratégia 1: prefixo(firstName, k) + prefixo(sobrenome, 7-k) — variando k de 1 a 7<br>
+              Estratégia 2: prefixo(sobrenome, k) + prefixo(firstName, 7-k)<br>
+              Estratégia 3: janela deslizante sobre firstName+sobrenome<br>
+              Estratégia 4: janela deslizante sobre todos os nomes concatenados
+            </span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <div class="flow-content">
+            <strong>Verificar unicidade</strong>
+            <span>Compara com todos os logins já cadastrados. Retorna o primeiro candidato disponível.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">5</div>
+          <div class="flow-content">
+            <strong>Fallback</strong>
+            <span>Se todos os candidatos estiverem ocupados, usa rotação circular sobre os caracteres do nome completo com offset crescente.</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Exemplos</h3>
+      <table>
+        <thead><tr><th>Nome</th><th>Login gerado</th><th>Estratégia usada</th></tr></thead>
+        <tbody>
+          <tr><td>Maria Silva Souza</td><td><span class="inline-code">mariasi</span></td><td>prefix(maria,5) + prefix(silva,2)</td></tr>
+          <tr><td>João Pedro Lima</td><td><span class="inline-code">joaoped</span></td><td>prefix(joao,4) + prefix(pedro,3)</td></tr>
+          <tr><td>Ana Paula Ferreira</td><td><span class="inline-code">anapfer</span></td><td>prefix(ana,3) + prefix(ferreira,4)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert-box alert-warning">
+        O algoritmo garante que nenhum número é inserido. Caso o nome seja muito curto para gerar 7 letras distintas, a rotação circular reutiliza os próprios caracteres do nome em ordem diferente.
+      </div>
+    </section>
+
+    <!-- PERSISTENCE -->
+    <section id="persistence">
+      <h2>Persistência</h2>
+      <p><strong>Banco escolhido:</strong> PostgreSQL 16 (relacional), rodando via Docker.</p>
+      <p><strong>Motivação:</strong> dados estruturados com unicidade garantida por constraints (<span class="inline-code">UNIQUE</span> em <span class="inline-code">document</span>, <span class="inline-code">email</span> e <span class="inline-code">login</span>), transações ACID e maturidade do driver JDBC.</p>
+
+      <h3>Schema da tabela persons</h3>
+      <pre><code>CREATE TABLE persons (
+    id           UUID         PRIMARY KEY,
+    full_name    VARCHAR(255) NOT NULL,
+    document     VARCHAR(11)  NOT NULL UNIQUE,
+    email        VARCHAR(255) NOT NULL UNIQUE,
+    birth_date   DATE         NOT NULL,
+    cep          VARCHAR(8)   NOT NULL,
+    street       VARCHAR(255) NOT NULL,
+    neighborhood VARCHAR(255),
+    city         VARCHAR(255) NOT NULL,
+    state        VARCHAR(2)   NOT NULL,
+    complement   VARCHAR(255),
+    number       VARCHAR(20),
+    login        VARCHAR(7)   NOT NULL UNIQUE,
+    created_at   TIMESTAMP    NOT NULL DEFAULT NOW()
+);</code></pre>
+    </section>
+
+    <!-- FRONTEND -->
+    <section id="frontend">
+      <h2>Estrutura do Frontend</h2>
+      <pre><code>frontend/src/
+├── components/
+│   ├── ui/           Input · Button · Alert · Card
+│   └── person/       PersonForm · PersonCard · SuccessResult
+├── pages/            RegisterPage · PersonListPage
+├── hooks/            useCepLookup
+├── services/         api.js (axios → BFF)
+└── lib/              utils.js (formatCPF, formatCEP, extractApiError)</code></pre>
+
+      <h3>Fluxo do formulário</h3>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <div class="flow-content">
+            <strong>Usuário digita o CEP</strong>
+            <span>Ao completar 8 dígitos, <span class="inline-code">useCepLookup</span> chama <span class="inline-code">GET /api/address/{cep}</span> no BFF e preenche logradouro, bairro, cidade e UF automaticamente.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <div class="flow-content">
+            <strong>Validação client-side</strong>
+            <span>React Hook Form valida todos os campos antes do submit (CPF, e-mail, data, nome sem acentos).</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <div class="flow-content">
+            <strong>Submit → BFF → Backend</strong>
+            <span>POST para <span class="inline-code">/api/persons</span> no BFF, que repassa ao backend.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <div class="flow-content">
+            <strong>Exibição do resultado</strong>
+            <span>Componente <span class="inline-code">SuccessResult</span> exibe o <strong>login gerado</strong> em destaque junto com todos os dados cadastrados.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCKER -->
+    <section id="docker">
+      <h2>Docker</h2>
+      <p>O <span class="inline-code">docker-compose.yml</span> na raiz sobe todos os serviços na ordem correta:</p>
+      <pre><code>postgres      → migrations → backend → bff</code></pre>
+
+      <table>
+        <thead><tr><th>Serviço</th><th>Imagem</th><th>Porta</th><th>Depende de</th></tr></thead>
+        <tbody>
+          <tr><td>postgres</td><td>postgres:16</td><td>5432</td><td>—</td></tr>
+          <tr><td>migrations</td><td>build ./migrations</td><td>—</td><td>postgres healthy</td></tr>
+          <tr><td>backend</td><td>build ./backend</td><td>8080</td><td>migrations completed</td></tr>
+          <tr><td>bff</td><td>build ./bff</td><td>3001</td><td>backend</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- MIGRATIONS -->
+    <section id="migrations">
+      <h2>Migrations</h2>
+      <p>Projeto Maven independente (<span class="inline-code">migrations/</span>) com Flyway. Separado do backend para que o controle de schema não dependa do boot da aplicação.</p>
+      <pre><code>migrations/
+├── pom.xml
+├── Dockerfile
+└── src/main/resources/db/migration/
+    └── V1__create_persons_table.sql</code></pre>
+
+      <p>Para rodar manualmente:</p>
+      <pre><code>cd migrations
+FLYWAY_URL=jdbc:postgresql://localhost:5432/desafiotecnico \
+FLYWAY_USER=postgres \
+FLYWAY_PASSWORD=postgres \
+mvn flyway:migrate</code></pre>
+    </section>
+
+    <!-- CICD -->
+    <section id="cicd">
+      <h2>CI/CD — GitHub Actions</h2>
+      <table>
+        <thead><tr><th>Workflow</th><th>Trigger</th><th>Ação</th></tr></thead>
+        <tbody>
+          <tr><td>backend.yml</td><td>push em <span class="inline-code">backend/**</span></td><td>build + test + deploy Railway</td></tr>
+          <tr><td>bff.yml</td><td>push em <span class="inline-code">bff/**</span></td><td>build + test + deploy Railway</td></tr>
+          <tr><td>frontend.yml</td><td>push em <span class="inline-code">frontend/**</span></td><td>build + deploy Cloudflare Pages</td></tr>
+          <tr><td>db-migration.yml</td><td>push em <span class="inline-code">migrations/**</span></td><td>Flyway migrate → PostgreSQL</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- HOW TO RUN -->
+    <section id="howto">
+      <h2>Como Rodar</h2>
+
+      <h3>Opção 1 — Docker Compose (recomendado)</h3>
+      <pre><code># Na raiz do projeto
+docker compose up --build</code></pre>
+      <p>Aguarde todos os serviços subirem. Frontend pode ser iniciado separadamente:</p>
+      <pre><code>cd frontend
+npm install
+npm run dev     # http://localhost:5173</code></pre>
+
+      <h3>Opção 2 — Manual</h3>
+      <pre><code># 1. Banco
+docker run -d --name pg -e POSTGRES_DB=desafiotecnico \
+  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 postgres:16
+
+# 2. Migrations
+cd migrations
+mvn flyway:migrate
+
+# 3. Backend
+cd backend
+mvn clean package -DskipTests
+java -jar desafioTecnico-webui/target/*.jar
+
+# 4. BFF
+cd bff
+mvn clean package -DskipTests
+java -jar target/*.jar
+
+# 5. Frontend
+cd frontend
+npm install && npm run dev</code></pre>
+
+      <h3>Variáveis de ambiente</h3>
+      <table>
+        <thead><tr><th>Projeto</th><th>Variável</th><th>Padrão</th></tr></thead>
+        <tbody>
+          <tr><td>backend</td><td>DATABASE_URL</td><td>jdbc:postgresql://localhost:5432/desafiotecnico</td></tr>
+          <tr><td>backend</td><td>DATABASE_USERNAME</td><td>postgres</td></tr>
+          <tr><td>backend</td><td>DATABASE_PASSWORD</td><td>postgres</td></tr>
+          <tr><td>backend</td><td>BFF_ORIGIN</td><td>http://localhost:3001</td></tr>
+          <tr><td>bff</td><td>BACKEND_URL</td><td>http://localhost:8080</td></tr>
+          <tr><td>bff</td><td>FRONTEND_ORIGIN</td><td>http://localhost:5173</td></tr>
+          <tr><td>frontend</td><td>VITE_BFF_URL</td><td>http://localhost:3001</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

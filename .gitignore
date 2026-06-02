@@ -1,0 +1,32 @@
+# Maven
+target/
+*.jar
+*.war
+*.class
+.mvn/
+
+# Node
+node_modules/
+dist/
+.env
+.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Claude
+.claude/
+CLAUDE.md
+AGENTS.md
