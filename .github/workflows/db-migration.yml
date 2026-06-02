@@ -19,6 +19,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Debug connection info
+        run: |
+          echo "URL length: ${#URL}"
+          echo "USER: $USER"
+        env:
+          URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+          USER: ${{ secrets.SUPABASE_DB_USERNAME }}
+
       - name: Run migrations
         working-directory: migrations
         run: |
