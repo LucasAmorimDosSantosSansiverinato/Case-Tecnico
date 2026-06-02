@@ -21,8 +21,8 @@ jobs:
 
       - name: Run migrations
         working-directory: migrations
-        run: mvn --batch-mode flyway:migrate
-        env:
-          FLYWAY_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
-          FLYWAY_USER: ${{ secrets.SUPABASE_DB_USERNAME }}
-          FLYWAY_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          mvn --batch-mode flyway:migrate \
+            -Dflyway.url="${{ secrets.SUPABASE_DATABASE_URL }}" \
+            -Dflyway.user="${{ secrets.SUPABASE_DB_USERNAME }}" \
+            -Dflyway.password="${{ secrets.SUPABASE_DB_PASSWORD }}"
