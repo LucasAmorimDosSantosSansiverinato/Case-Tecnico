@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'migrations/**'
+  workflow_dispatch:
 
 jobs:
   migrate:
@@ -22,10 +23,10 @@ jobs:
       - name: Debug connection info
         run: |
           echo "URL length: ${#URL}"
-          echo "USER: $USER"
+          echo "USER: $DBUSER"
         env:
           URL: ${{ secrets.SUPABASE_DATABASE_URL }}
-          USER: ${{ secrets.SUPABASE_DB_USERNAME }}
+          DBUSER: ${{ secrets.SUPABASE_DB_USERNAME }}
 
       - name: Run migrations
         working-directory: migrations
