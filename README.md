@@ -1,202 +1,191 @@
-# Case Técnico — Cadastro de Pessoas
+# Case Técnico — Migrations & Ambiente Local
 
-Aplicação full-stack de cadastro de pessoas com geração automática de login.
-
----
-
-## Estrutura do projeto
-
-```
-.
-├── backend/       Java Spring Boot — Clean Architecture + CQRS
-├── bff/           Java Spring Boot — Backend for Frontend
-├── frontend/      React + Vite
-├── migrations/    Flyway — migrations do banco de dados
-├── docs/          Documentação em HTML
-└── docker-compose.yml
-```
+Este repositório centraliza as **migrations do banco de dados** e o **`docker-compose.yml`** para rodar todo o projeto localmente com um único comando.
 
 ---
 
-## Ambientes
+## Repositórios do projeto
 
-| Onde | O que roda |
-|------|-----------|
-| Cloudflare Pages | Frontend (React) |
-| VM (produção) | Backend + BFF (Java) |
-| Supabase | PostgreSQL (produção) |
-| Docker Compose | Tudo local para desenvolvimento |
+| Repositório | Conteúdo |
+|-------------|----------|
+| `Case-Tecnico` ← **este** | Migrations (Flyway) + docker-compose |
+| `case-tecnico-app` | Backend Java (Clean Architecture + CQRS) |
+| `case-tecnico-bff` | BFF Java (proxy + CORS + CEP) |
+| `case-tecnico-frontend` | Frontend React + Vite |
+
+---
+
+## Estrutura de pastas esperada
+
+Todos os repositórios devem estar **lado a lado na mesma pasta**:
+
+```
+GITHUB/
+├── Case-Tecnico/           ← rodar docker compose aqui
+│   ├── migrations/
+│   ├── docker-compose.yml
+│   ├── .env
+│   └── README.md
+├── case-tecnico-app/
+│   └── backend/
+├── case-tecnico-bff/
+└── case-tecnico-frontend/
+```
+
+Se seus repos estiverem em outro caminho, edite o `context` de cada serviço no `docker-compose.yml`.
 
 ---
 
 ## Pré-requisitos
 
-- Java 21+
-- Maven 3.9+
-- Node.js 20+
-- Docker
+- Docker + Docker Compose
+- Git
 
 ---
 
-## Rodar localmente
+## Como rodar
 
-### Docker Compose — recomendado
+**1. Clone todos os repositórios lado a lado:**
 
-Sobe o banco, roda as migrations e inicia backend e BFF automaticamente:
+```bash
+git clone https://github.com/LucasAmorimDosSantosSansiverinato/Case-Tecnico.git
+git clone https://github.com/LucasAmorimDosSantosSansiverinato/case-tecnico-app.git
+git clone https://github.com/LucasAmorimDosSantosSansiverinato/case-tecnico-bff.git
+git clone https://github.com/LucasAmorimDosSantosSansiverinato/case-tecnico-frontend.git
+```
+
+**2. Crie o `.env` a partir do exemplo:**
+
+```bash
+cd Case-Tecnico
+cp .env.example .env
+```
+
+O `.env` padrão funciona sem nenhuma alteração para uso local.
+
+**3. Suba tudo:**
 
 ```bash
 docker compose up --build
-```
-
-Frontend roda separado:
-
-```bash
-cd frontend
-npm install
-npm run dev
 ```
 
 Acesse em `http://localhost:5173`.
 
 ---
 
-### Manual (passo a passo)
+## Arquivo `.env`
 
-**1. Banco de dados**
+Copie `.env.example` para `.env` e ajuste se necessário:
 
-```bash
-docker run -d --name desafio-postgres \
-  -e POSTGRES_DB=desafiotecnico \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 \
-  postgres:16
+```env
+# Banco de dados
+POSTGRES_DB=desafiotecnico
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+
+# Portas (altere se alguma porta já estiver em uso)
+BACKEND_PORT=8080
+BFF_PORT=3001
+FRONTEND_PORT=5173
 ```
 
-**2. Migrations** — deve rodar antes do backend
-
-```bash
-cd migrations
-mvn flyway:migrate
-```
-
-**3. Backend**
-
-```bash
-cd backend
-mvn clean package -DskipTests
-java -jar desafioTecnico-webui/target/desafioTecnico-webui-1.0.0-SNAPSHOT.jar
-```
-
-Porta `8080`.
-
-**4. BFF**
-
-```bash
-cd bff
-mvn clean package -DskipTests
-java -jar target/desafioTecnico-bff-1.0.0-SNAPSHOT.jar
-```
-
-Porta `3001`.
-
-**5. Frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Porta `5173`.
+**Você só precisa alterar se:**
+- Já tiver outra aplicação rodando nas portas padrão
+- Quiser usar uma senha diferente para o banco local
 
 ---
 
-## Variáveis de ambiente
+## Como alterar os caminhos dos repositórios
 
-Todas têm valores padrão para rodar localmente sem configuração adicional.
+Se os repositórios não estiverem lado a lado, edite o `docker-compose.yml`:
 
-| Projeto  | Variável            | Padrão local                                    |
-|----------|---------------------|-------------------------------------------------|
-| backend  | `DATABASE_URL`      | `jdbc:postgresql://localhost:5432/desafiotecnico` |
-| backend  | `DATABASE_USERNAME` | `postgres`                                      |
-| backend  | `DATABASE_PASSWORD` | `postgres`                                      |
-| backend  | `BFF_ORIGIN`        | `http://localhost:3001`                         |
-| bff      | `BACKEND_URL`       | `http://localhost:8080`                         |
-| bff      | `FRONTEND_ORIGIN`   | `http://localhost:5173`                         |
-| frontend | `VITE_BFF_URL`      | `http://localhost:3001`                         |
+```yaml
+backend:
+  build:
+    context: ../case-tecnico-app/backend   # ← ajuste este caminho
+
+bff:
+  build:
+    context: ../case-tecnico-bff           # ← ajuste este caminho
+
+frontend:
+  build:
+    context: ../case-tecnico-frontend      # ← ajuste este caminho
+```
+
+O caminho é **relativo** à pasta `Case-Tecnico/`.
 
 ---
 
-## CI/CD — GitHub Actions
+## Ordem de inicialização
 
-Push na branch `main` dispara o deploy automaticamente para cada serviço alterado.
+O Docker Compose sobe os serviços nesta ordem, respeitando dependências:
 
-| Workflow | Dispara quando muda | Deploy |
-|----------|--------------------|----|
-| `backend.yml` | `backend/**` | JAR → VM via SSH |
-| `bff.yml` | `bff/**` | JAR → VM via SSH |
-| `frontend.yml` | `frontend/**` | dist → Cloudflare Pages |
-| `db-migration.yml` | `migrations/**` | Flyway → Supabase |
+```
+postgres → migrations → backend → bff → frontend
+```
 
-### Secrets necessários no repositório
+O backend só sobe após as migrations criarem a tabela `persons`.
 
-Configure em **Settings → Secrets and variables → Actions**:
+---
 
-| Secret | Onde pegar |
-|--------|-----------|
-| `VM_HOST` | IP público da VM |
-| `VM_USER` | Usuário SSH da VM (ex: `ubuntu`) |
-| `VM_SSH_KEY` | Chave privada SSH para acessar a VM |
-| `SUPABASE_DATABASE_URL` | Supabase → Connect → JDBC URL |
-| `SUPABASE_DB_USERNAME` | Supabase → Connect → usuário |
-| `SUPABASE_DB_PASSWORD` | Supabase → Connect → senha |
-| `VITE_BFF_URL` | URL pública do BFF na VM (ex: `http://IP:3001`) |
-| `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare → lado direito da home |
-
-### Subir o código pela primeira vez
+## Comandos úteis
 
 ```bash
-git init
-git add .
-git commit -m "feat: initial project setup"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/case-tecnico.git
-git push -u origin main
+# Subir tudo (primeira vez ou após mudanças)
+docker compose up --build
+
+# Subir em background
+docker compose up -d --build
+
+# Ver logs em tempo real
+docker compose logs -f
+
+# Ver logs de um serviço específico
+docker compose logs -f backend
+docker compose logs -f bff
+
+# Parar tudo
+docker compose down
+
+# Parar tudo e apagar o banco (recomeça do zero)
+docker compose down -v
 ```
 
 ---
 
-## Portas
+## Portas padrão
 
-| Serviço    | Porta  |
-|------------|--------|
-| Frontend   | `5173` |
-| BFF        | `3001` |
-| Backend    | `8080` |
-| PostgreSQL | `5432` |
+| Serviço    | Porta  | URL                           |
+|------------|--------|-------------------------------|
+| Frontend   | `5173` | http://localhost:5173         |
+| BFF        | `3001` | http://localhost:3001         |
+| Backend    | `8080` | http://localhost:8080         |
+| PostgreSQL | `5432` | localhost:5432/desafiotecnico |
+
+---
+
+## Migrations
+
+Os arquivos SQL ficam em `migrations/src/main/resources/db/migration/`:
+
+| Arquivo | O que faz |
+|---------|-----------|
+| `V1__create_persons_table.sql` | Cria a tabela `persons` |
+| `V2__seed_persons.sql` | Insere 10 registros de teste |
+
+Para criar uma nova migration, adicione um arquivo seguindo o padrão:
+```
+V{número}__{descricao_com_underline}.sql
+```
+Exemplo: `V3__add_phone_column.sql`
 
 ---
 
 ## Documentação completa
 
-Abra `docs/index.html` no browser para ver diagrama de arquitetura, endpoints, lógica do login e schema do banco.
-
----
-
-## Lógica do login
-
-- Exatamente **7 caracteres**
-- Apenas **letras minúsculas** (a–z), sem números e sem espaços
-- **Único** por pessoa
-- Gerado a partir do **nome completo**
-
-**Estratégia:** prefixos do primeiro nome combinados com prefixos dos sobrenomes em diferentes proporções. Exemplo: `Maria Silva Souza` → `mariasi`.
-
----
-
-## Documento (CPF)
-
-Formato **CPF** — 11 dígitos com validação dos dígitos verificadores.
-Aceita `529.982.247-25` ou `52998224725`.
+Abra `docs/index.html` no browser para ver:
+- Diagrama de arquitetura
+- Endpoints da API
+- Lógica de geração de login
+- Schema do banco

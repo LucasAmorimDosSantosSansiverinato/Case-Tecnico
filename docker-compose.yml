@@ -3,15 +3,15 @@ services:
     image: postgres:16
     container_name: desafio-postgres
     environment:
-      POSTGRES_DB: desafiotecnico
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-desafiotecnico}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,41 +21,53 @@ services:
       context: ./migrations
     container_name: desafio-migrations
     environment:
-      FLYWAY_URL: jdbc:postgresql://postgres:5432/desafiotecnico
-      FLYWAY_USER: postgres
-      FLYWAY_PASSWORD: postgres
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-desafiotecnico}
+      FLYWAY_USER: ${POSTGRES_USER:-postgres}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     depends_on:
       postgres:
         condition: service_healthy
 
   backend:
     build:
-      context: ./backend
+      context: ../case-tecnico-app/backend
       dockerfile: Dockerfile
     container_name: desafio-backend
     environment:
-      DATABASE_URL: jdbc:postgresql://postgres:5432/desafiotecnico
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
-      BFF_ORIGIN: http://localhost:3001
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-desafiotecnico}
+      DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      BFF_ORIGIN: http://localhost:${BFF_PORT:-3001}
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       migrations:
         condition: service_completed_successfully
 
   bff:
     build:
-      context: ./bff
+      context: ../case-tecnico-bff
       dockerfile: Dockerfile
     container_name: desafio-bff
     environment:
       BACKEND_URL: http://backend:8080
-      FRONTEND_ORIGIN: http://localhost:5173
+      FRONTEND_ORIGIN: http://localhost:${FRONTEND_PORT:-5173}
     ports:
-      - "3001:3001"
+      - "${BFF_PORT:-3001}:3001"
     depends_on:
       - backend
+
+  frontend:
+    build:
+      context: ../case-tecnico-frontend
+      dockerfile: Dockerfile.dev
+    container_name: desafio-frontend
+    environment:
+      VITE_BFF_URL: http://localhost:${BFF_PORT:-3001}
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - bff
 
 volumes:
   postgres_data:
