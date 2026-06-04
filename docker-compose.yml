@@ -16,6 +16,19 @@ services:
       timeout: 5s
       retries: 10
 
+  migrations:
+    build:
+      context: ./migrations
+      dockerfile: Dockerfile
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-desafiotecnico}
+      FLYWAY_USER: ${POSTGRES_USER:-postgres}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+
   backend:
     build:
       context: ../case-tecnico-app/backend
