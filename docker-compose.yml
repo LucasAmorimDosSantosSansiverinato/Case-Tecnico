@@ -16,18 +16,6 @@ services:
       timeout: 5s
       retries: 10
 
-  migrations:
-    build:
-      context: ./migrations
-    container_name: desafio-migrations
-    environment:
-      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-desafiotecnico}
-      FLYWAY_USER: ${POSTGRES_USER:-postgres}
-      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   backend:
     build:
       context: ../case-tecnico-app/backend
@@ -41,8 +29,8 @@ services:
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
-      migrations:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
 
   bff:
     build:

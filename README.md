@@ -1,4 +1,40 @@
-# Case Técnico — Migrations & Ambiente Local
+# Migration — desafioTecnico
+
+## Posição na Arquitetura
+
+```
+Frontend → BFF → Backend → PostgreSQL
+    ↑
+[Este projeto orquestra tudo localmente e gerencia o schema do banco]
+```
+
+Este é o ponto de entrada para rodar a aplicação localmente. Ele contém o `docker-compose.yml` que sobe todos os serviços.
+
+O schema do banco é gerenciado pelo **ORM (Hibernate)** com `ddl-auto: update` — o próprio backend cria e atualiza as tabelas automaticamente ao subir.
+
+**Para rodar a aplicação localmente, comece sempre por aqui.**
+
+## Hospedagem em Produção
+
+| Serviço | Plataforma |
+|---|---|
+| Backend | Railway |
+| BFF | Railway |
+| Frontend | Cloudflare Pages |
+| PostgreSQL | Railway |
+
+## Segurança — Variáveis Obrigatórias em Produção
+
+Além das variáveis do banco, os segredos JWT precisam ser configurados:
+
+| Variável | Onde configurar | Descrição |
+|---|---|---|
+| `JWT_SECRET` | BFF | Assina os tokens de usuário (mín. 32 chars) |
+| `SERVICE_TOKEN_SECRET` | BFF **e** Backend | Compartilhado — autentica o BFF no Backend (mín. 32 chars) |
+
+> Os valores padrão (`changeme-...`) são apenas para desenvolvimento local. **Nunca use em produção.**
+
+---
 
 Este repositório centraliza as **migrations do banco de dados** e o **`docker-compose.yml`** para rodar todo o projeto localmente com um único comando.
 
